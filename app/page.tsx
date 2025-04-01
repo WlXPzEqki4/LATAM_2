@@ -3,9 +3,11 @@
 import { useState, useEffect } from "react"
 import LandingPage from "@/components/landing-page"
 import Dashboard from "@/components/dashboard"
+import PasswordProtection from "@/components/password-protection"
 
 export default function Home() {
   const [loading, setLoading] = useState(true)
+  const [authenticated, setAuthenticated] = useState(false)
   const [scrollPosition, setScrollPosition] = useState(0)
   const windowHeight = typeof window !== "undefined" ? window.innerHeight : 0
 
@@ -35,11 +37,17 @@ export default function Home() {
 
   return (
     <main className="relative">
+      {/* Password Protection */}
+      <PasswordProtection 
+        correctPassword="B3@c0nr3d!" 
+        onAuthenticated={() => setAuthenticated(true)} 
+      />
+
       {loading ? (
         <div className="fixed inset-0 bg-black flex items-center justify-center z-50">
           <div className="text-white text-4xl font-bold animate-pulse">EDGE</div>
         </div>
-      ) : (
+      ) : authenticated ? (
         <>
           {/* Landing page */}
           <div
@@ -62,8 +70,7 @@ export default function Home() {
             <Dashboard />
           </div>
         </>
-      )}
+      ) : null}
     </main>
   )
 }
-

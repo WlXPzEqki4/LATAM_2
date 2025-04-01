@@ -5,282 +5,70 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import {
-  Building,
-  TrendingUp,
-  ShieldAlert,
-  Users,
-  Globe,
-  FileText,
-  Landmark,
-  Scale,
-  DollarSign,
-  Briefcase,
-  Handshake,
-  Plane,
+  Activity,
+  AlertCircle,
   Anchor,
+  ArrowRight,
+  BarChart3,
+  Briefcase,
+  Building,
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
+  CreditCard,
   Crosshair,
+  DollarSign,
+  Download,
+  ExternalLink,
+  Eye,
+  FileText,
+  Filter,
+  Globe,
+  Handshake,
+  HelpCircle,
+  Info,
+  Landmark,
+  Layers,
+  LayoutDashboard,
+  List,
+  Lock,
+  LucideIcon,
+  Menu,
+  MessageSquare,
+  Minus,
+  Moon,
+  MoreHorizontal,
+  MoreVertical,
+  Package,
+  Plane,
+  Plus,
   Radar,
+  RefreshCw,
+  Scale,
+  Search,
+  Settings,
+  Share,
+  ShieldAlert,
+  ShieldCheck,
+  Slash,
+  SlidersHorizontal,
+  Star,
+  Sun,
+  Syringe,
+  Tag,
+  Trash,
+  TrendingUp,
+  Twitter,
+  Upload,
+  User,
+  UserPlus,
+  Users,
+  X,
 } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
 
 export default function Countries() {
   const [selectedCountry, setSelectedCountry] = useState("argentina")
-  // Replace the single mapContainer ref and map ref with separate refs for each country
-  const argentinaMapContainer = useRef<HTMLDivElement>(null)
-  const chileMapContainer = useRef<HTMLDivElement>(null)
-  const brazilMapContainer = useRef<HTMLDivElement>(null)
-  const argentinaMap = useRef<any>(null)
-  const chileMap = useRef<any>(null)
-  const brazilMap = useRef<any>(null)
-  const [mapboxLoaded, setMapboxLoaded] = useState(false)
-
-  // Replace the single useEffect with a function to load Mapbox once
-  useEffect(() => {
-    if (mapboxLoaded) return
-
-    const loadMapboxScript = () => {
-      return new Promise<void>((resolve, reject) => {
-        try {
-          if (window.mapboxgl) {
-            console.log("Mapbox already loaded")
-            setMapboxLoaded(true)
-            resolve()
-            return
-          }
-
-          console.log("Loading Mapbox script...")
-          const script = document.createElement("script")
-          script.src = "https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"
-          script.async = true
-          script.crossOrigin = "anonymous"
-
-          script.onload = () => {
-            if (window.mapboxgl) {
-              console.log("Mapbox script loaded successfully")
-              setMapboxLoaded(true)
-              resolve()
-            } else {
-              reject(new Error("mapboxgl not available after script load"))
-            }
-          }
-
-          script.onerror = () => {
-            reject(new Error("Failed to load Mapbox GL JS"))
-          }
-
-          document.head.appendChild(script)
-
-          const link = document.createElement("link")
-          link.href = "https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css"
-          link.rel = "stylesheet"
-          document.head.appendChild(link)
-        } catch (err) {
-          console.error("Error setting up Mapbox script:", err)
-          reject(err)
-        }
-      })
-    }
-
-    loadMapboxScript()
-      .then(() => console.log("Mapbox loaded successfully"))
-      .catch((err) => console.error("Error loading Mapbox:", err))
-  }, [])
-
-  // Fix the map initialization logic for Argentina, Chile, and Brazil
-  // Replace the three separate useEffect hooks with this improved version
-
-  // Add separate useEffect for Argentina map
-  useEffect(() => {
-    if (!mapboxLoaded || !argentinaMapContainer.current) return
-
-    if (selectedCountry === "argentina" && !argentinaMap.current) {
-      if (!window.mapboxgl) return
-
-      window.mapboxgl.accessToken =
-        "pk.eyJ1IjoiamNkZW50b24yMDUxIiwiYSI6ImNtMzVkZXJudTA5ejkya3B5NDU4Z2MyeHQifQ.aUk4eH5k3JC45Foxcbe2qQ"
-
-      argentinaMap.current = new window.mapboxgl.Map({
-        container: argentinaMapContainer.current,
-        style: "mapbox://styles/mapbox/light-v11",
-        center: [-65.0, -34.0], // Center on Argentina
-        zoom: 3.5,
-        attributionControl: false,
-      })
-
-      argentinaMap.current.on("load", () => {
-        // Add markers for key cities in Argentina
-        const cities = [
-          { name: "Buenos Aires", coordinates: [-58.3816, -34.6037], description: "Capital" },
-          { name: "Córdoba", coordinates: [-64.1888, -31.4201], description: "Industrial Hub" },
-          { name: "Mendoza", coordinates: [-68.8272, -32.8908], description: "Wine Region" },
-          { name: "Ushuaia", coordinates: [-68.3029, -54.8019], description: "Strategic Naval Base" },
-          { name: "Vaca Muerta", coordinates: [-69.15, -38.9], description: "Shale Oil & Gas" },
-        ]
-
-        cities.forEach((city) => {
-          const el = document.createElement("div")
-          el.className = "marker"
-          el.style.width = "12px"
-          el.style.height = "12px"
-          el.style.borderRadius = "50%"
-          el.style.backgroundColor = "rgba(124, 58, 237, 0.8)"
-          el.style.border = "2px solid white"
-
-          new window.mapboxgl.Marker(el)
-            .setLngLat(city.coordinates)
-            .setPopup(
-              new window.mapboxgl.Popup({ offset: 25 }).setHTML(
-                `<h3 style="font-weight: bold; margin-bottom: 4px;">${city.name}</h3>
-              <p style="margin: 0;">${city.description}</p>`,
-              ),
-            )
-            .addTo(argentinaMap.current)
-        })
-
-        // Add the Falklands/Malvinas marker
-        const falklandsEl = document.createElement("div")
-        falklandsEl.className = "marker"
-        falklandsEl.style.width = "12px"
-        falklandsEl.style.height = "12px"
-        falklandsEl.style.borderRadius = "50%"
-        falklandsEl.style.backgroundColor = "rgba(239, 68, 68, 0.8)"
-        falklandsEl.style.border = "2px solid white"
-
-        new window.mapboxgl.Marker(falklandsEl)
-          .setLngLat([-59.55, -51.75])
-          .setPopup(
-            new window.mapboxgl.Popup({ offset: 25 }).setHTML(
-              `<h3 style="font-weight: bold; margin-bottom: 4px;">Falklands/Malvinas</h3>
-            <p style="margin: 0;">Disputed Territory</p>`,
-            ),
-          )
-          .addTo(argentinaMap.current)
-      })
-    }
-
-    return () => {
-      if (argentinaMap.current && selectedCountry !== "argentina") {
-        argentinaMap.current.remove()
-        argentinaMap.current = null
-      }
-    }
-  }, [mapboxLoaded, selectedCountry])
-
-  // Add useEffect for Chile map
-  useEffect(() => {
-    if (!mapboxLoaded || !chileMapContainer.current) return
-
-    if (selectedCountry === "chile" && !chileMap.current) {
-      if (!window.mapboxgl) return
-
-      window.mapboxgl.accessToken =
-        "pk.eyJ1IjoiamNkZW50b24yMDUxIiwiYSI6ImNtMzVkZXJudTA5ejkya3B5NDU4Z2MyeHQifQ.aUk4eH5k3JC45Foxcbe2qQ"
-
-      chileMap.current = new window.mapboxgl.Map({
-        container: chileMapContainer.current,
-        style: "mapbox://styles/mapbox/light-v11",
-        center: [-71.0, -35.0], // Center on Chile
-        zoom: 3.5,
-        attributionControl: false,
-      })
-
-      chileMap.current.on("load", () => {
-        // Add markers for key cities in Chile
-        const cities = [
-          { name: "Santiago", coordinates: [-70.6693, -33.4489], description: "Capital" },
-          { name: "Valparaíso", coordinates: [-71.6273, -33.0472], description: "Major Port" },
-          { name: "Concepción", coordinates: [-73.0498, -36.8201], description: "Industrial Center" },
-          { name: "Antofagasta", coordinates: [-70.3975, -23.6509], description: "Mining Hub" },
-          { name: "Punta Arenas", coordinates: [-70.907, -53.1638], description: "Strategic Naval Base" },
-          { name: "Iquique", coordinates: [-70.1435, -20.2307], description: "Free Trade Zone" },
-        ]
-
-        cities.forEach((city) => {
-          const el = document.createElement("div")
-          el.className = "marker"
-          el.style.width = "12px"
-          el.style.height = "12px"
-          el.style.borderRadius = "50%"
-          el.style.backgroundColor = "rgba(124, 58, 237, 0.8)"
-          el.style.border = "2px solid white"
-
-          new window.mapboxgl.Marker(el)
-            .setLngLat(city.coordinates)
-            .setPopup(
-              new window.mapboxgl.Popup({ offset: 25 }).setHTML(
-                `<h3 style="font-weight: bold; margin-bottom: 4px;">${city.name}</h3>
-              <p style="margin: 0;">${city.description}</p>`,
-              ),
-            )
-            .addTo(chileMap.current)
-        })
-      })
-    }
-
-    return () => {
-      if (chileMap.current && selectedCountry !== "chile") {
-        chileMap.current.remove()
-        chileMap.current = null
-      }
-    }
-  }, [mapboxLoaded, selectedCountry])
-
-  // Add useEffect for Brazil map
-  useEffect(() => {
-    if (!mapboxLoaded || !brazilMapContainer.current) return
-
-    if (selectedCountry === "brazil" && !brazilMap.current) {
-      if (!window.mapboxgl) return
-
-      window.mapboxgl.accessToken =
-        "pk.eyJ1IjoiamNkZW50b24yMDUxIiwiYSI6ImNtMzVkZXJudTA5ejkya3B5NDU4Z2MyeHQifQ.aUk4eH5k3JC45Foxcbe2qQ"
-
-      brazilMap.current = new window.mapboxgl.Map({
-        container: brazilMapContainer.current,
-        style: "mapbox://styles/mapbox/light-v11",
-        center: [-55.0, -15.0], // Center on Brazil
-        zoom: 3,
-        attributionControl: false,
-      })
-
-      brazilMap.current.on("load", () => {
-        // Add markers for key cities in Brazil
-        const cities = [
-          { name: "Brasília", coordinates: [-47.9292, -15.7801], description: "Capital" },
-          { name: "São Paulo", coordinates: [-46.6333, -23.5505], description: "Financial Center" },
-          { name: "Rio de Janeiro", coordinates: [-43.1729, -22.9068], description: "Tourism Hub" },
-          { name: "Manaus", coordinates: [-60.0217, -3.119], description: "Amazon Gateway" },
-        ]
-
-        cities.forEach((city) => {
-          const el = document.createElement("div")
-          el.className = "marker"
-          el.style.width = "12px"
-          el.style.height = "12px"
-          el.style.borderRadius = "50%"
-          el.style.backgroundColor = "rgba(124, 58, 237, 0.8)"
-          el.style.border = "2px solid white"
-
-          new window.mapboxgl.Marker(el)
-            .setLngLat(city.coordinates)
-            .setPopup(
-              new window.mapboxgl.Popup({ offset: 25 }).setHTML(
-                `<h3 style="font-weight: bold; margin-bottom: 4px;">${city.name}</h3>
-              <p style="margin: 0;">${city.description}</p>`,
-              ),
-            )
-            .addTo(brazilMap.current)
-        })
-      })
-    }
-
-    return () => {
-      if (brazilMap.current && selectedCountry !== "brazil") {
-        brazilMap.current.remove()
-        brazilMap.current = null
-      }
-    }
-  }, [mapboxLoaded, selectedCountry])
 
   return (
     <div className="space-y-6">
@@ -318,121 +106,97 @@ export default function Countries() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <p>
-                  Argentina is experiencing significant political and economic changes under President Javier Milei's
-                  administration, which took office in December 2023. The new government is implementing a series of
-                  market-friendly reforms and austerity measures aimed at addressing the country's economic challenges,
-                  including high inflation, fiscal deficit, and currency controls.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                  <div className="flex flex-col p-3 bg-muted/30 rounded-lg">
-                    <span className="text-sm text-muted-foreground">Population</span>
-                    <span className="text-lg font-medium">45.8 million</span>
-                  </div>
-                  <div className="flex flex-col p-3 bg-muted/30 rounded-lg">
-                    <span className="text-sm text-muted-foreground">Capital</span>
-                    <span className="text-lg font-medium">Buenos Aires</span>
-                  </div>
-                  <div className="flex flex-col p-3 bg-muted/30 rounded-lg">
-                    <span className="text-sm text-muted-foreground">Official Language</span>
-                    <span className="text-lg font-medium">Spanish</span>
-                  </div>
-                </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Globe className="h-5 w-5" />
+                      <span>Country Overview</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Argentina is experiencing significant political and economic changes under President Javier Milei's administration, which took office in December 2023. The new government is implementing a series of market-friendly reforms and austerity measures aimed at addressing the country's economic challenges, including high inflation, fiscal deficit, and currency controls.
+                    </p>
+                    <div className="grid grid-cols-3 gap-4 text-center">
+                      <div>
+                        <div className="text-xs text-muted-foreground">Population</div>
+                        <div className="font-medium">45.8 million</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-muted-foreground">Capital</div>
+                        <div className="font-medium">Buenos Aires</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-muted-foreground">Official Language</div>
+                        <div className="font-medium">Spanish</div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <User className="h-5 w-5" />
+                      <span>Milei Administration</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div>
+                        <div className="text-xs text-muted-foreground">PRESIDENT</div>
+                        <div className="font-medium">Javier Milei</div>
+                        <div className="text-xs text-muted-foreground">Libertarian economist who took office in December 2023</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-muted-foreground">KEY OFFICIALS</div>
+                        <ul className="text-sm space-y-1 list-disc list-inside">
+                          <li>Luis Petri <span className="text-muted-foreground">Minister of Defense</span></li>
+                          <li>Patricia Bullrich <span className="text-muted-foreground">Minister of Security</span></li>
+                          <li>Luis Caputo <span className="text-muted-foreground">Minister of Economy</span></li>
+                          <li>Diana Mondino <span className="text-muted-foreground">Minister of Foreign Affairs</span></li>
+                        </ul>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Landmark className="h-5 w-5" />
+                      <span>Key Strategic Locations</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="text-sm space-y-2 list-disc list-inside">
+                      <li><strong>Buenos Aires (Capital)</strong>: Political and economic center, major port</li>
+                      <li><strong>Córdoba</strong>: Industrial hub, aerospace and automotive manufacturing</li>
+                      <li><strong>Mendoza</strong>: Wine region, gateway to Chile via Andes</li>
+                      <li><strong>Ushuaia</strong>: Naval base, southernmost city, gateway to Antarctica</li>
+                      <li><strong>Vaca Muerta</strong>: Major oil and gas reserves, significant energy potential</li>
+                      <li><strong className="text-red-500">Falklands/Malvinas</strong>: Disputed territory with the UK</li>
+                    </ul>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Briefcase className="h-5 w-5" />
+                      <span>Policy Direction</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="text-sm space-y-2 list-disc list-inside">
+                      <li><strong>Pro-Western foreign policy</strong>: Alignment with US and Western allies</li>
+                      <li><strong>Free-market economic reforms</strong>: Deregulation, privatization, and fiscal austerity</li>
+                      <li><strong>NATO global partner ambitions</strong>: Seeking closer defense ties with NATO</li>
+                      <li><strong>Military modernization</strong>: Plans to update aging military equipment</li>
+                    </ul>
+                  </CardContent>
+                </Card>
               </div>
             </CardContent>
           </Card>
-
-          {/* Map and Key Strategic Points */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Globe className="h-5 w-5 text-primary" />
-                  Strategic Map
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div ref={argentinaMapContainer} className="w-full h-[400px] rounded-lg border"></div>
-                <div className="mt-4 text-sm text-muted-foreground">
-                  Map showing key strategic locations in Argentina, including major cities, resource areas, and the
-                  disputed Falklands/Malvinas territory.
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Landmark className="h-5 w-5 text-primary" />
-                  Milei Administration
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium text-muted-foreground">PRESIDENT</h3>
-                  <p className="font-medium">Javier Milei</p>
-                  <p className="text-sm">Libertarian economist who took office in December 2023</p>
-                </div>
-
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium text-muted-foreground">KEY OFFICIALS</h3>
-                  <ul className="space-y-2">
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <div>
-                        <span className="font-medium">Luis Petri</span>
-                        <p className="text-sm">Minister of Defense</p>
-                      </div>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <div>
-                        <span className="font-medium">Patricia Bullrich</span>
-                        <p className="text-sm">Minister of Security</p>
-                      </div>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <div>
-                        <span className="font-medium">Luis Caputo</span>
-                        <p className="text-sm">Minister of Economy</p>
-                      </div>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <div>
-                        <span className="font-medium">Diana Mondino</span>
-                        <p className="text-sm">Minister of Foreign Affairs</p>
-                      </div>
-                    </li>
-                  </ul>
-                </div>
-
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium text-muted-foreground">POLICY DIRECTION</h3>
-                  <ul className="space-y-2">
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <span>Pro-Western foreign policy</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <span>Free-market economic reforms</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <span>NATO global partner ambitions</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <span>Military modernization</span>
-                    </li>
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
 
           {/* Economic Indicators */}
           <Card>
@@ -1054,19 +818,19 @@ export default function Countries() {
                       <ul className="space-y-2 mt-2">
                         <li className="flex items-start gap-2">
                           <span className="text-primary mt-1">•</span>
+                          <span>Coastal surveillance systems</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-primary mt-1">•</span>
                           <span>Offshore patrol vessels</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-primary mt-1">•</span>
-                          <span>Maritime surveillance systems</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-primary mt-1">•</span>
-                          <span>Coastal radar networks</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-primary mt-1">•</span>
                           <span>Naval communications equipment</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-primary mt-1">•</span>
+                          <span>Mine countermeasures technology</span>
                         </li>
                       </ul>
                     </CardContent>
@@ -1194,108 +958,97 @@ export default function Countries() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <p>
-                  Chile maintains a stable democratic governance under President Gabriel Boric, who took office in 2022.
-                  His left-leaning administration has emphasized a multilateralist vision in international affairs while
-                  maintaining internal stability. Chile's foreign policy platform explicitly seeks to "recover a
-                  multilateralist vision," prioritizing Latin American integration, support for international law, and
-                  cooperation on global issues.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                  <div className="flex flex-col p-3 bg-muted/30 rounded-lg">
-                    <span className="text-sm text-muted-foreground">Population</span>
-                    <span className="text-lg font-medium">19.2 million</span>
-                  </div>
-                  <div className="flex flex-col p-3 bg-muted/30 rounded-lg">
-                    <span className="text-sm text-muted-foreground">Capital</span>
-                    <span className="text-lg font-medium">Santiago</span>
-                  </div>
-                  <div className="flex flex-col p-3 bg-muted/30 rounded-lg">
-                    <span className="text-sm text-muted-foreground">Official Language</span>
-                    <span className="text-lg font-medium">Spanish</span>
-                  </div>
-                </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Globe className="h-5 w-5" />
+                      <span>Country Overview</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Chile is a stable democracy with a strong economy based on copper exports, agriculture, and services. Under President Gabriel Boric, who took office in March 2022 as the country's youngest modern president, Chile is navigating political changes following social unrest in 2019-2020 and the rejection of a proposed new constitution in 2022.
+                    </p>
+                    <div className="grid grid-cols-3 gap-4 text-center">
+                      <div>
+                        <div className="text-xs text-muted-foreground">Population</div>
+                        <div className="font-medium">19.2 million</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-muted-foreground">Capital</div>
+                        <div className="font-medium">Santiago</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-muted-foreground">Official Language</div>
+                        <div className="font-medium">Spanish</div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <User className="h-5 w-5" />
+                      <span>Boric Administration</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div>
+                        <div className="text-xs text-muted-foreground">PRESIDENT</div>
+                        <div className="font-medium">Gabriel Boric</div>
+                        <div className="text-xs text-muted-foreground">Former student leader who took office in March 2022</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-muted-foreground">KEY OFFICIALS</div>
+                        <ul className="text-sm space-y-1 list-disc list-inside">
+                          <li>Carolina Tohá <span className="text-muted-foreground">Minister of Interior</span></li>
+                          <li>Alberto van Klaveren <span className="text-muted-foreground">Minister of Foreign Affairs</span></li>
+                          <li>Maya Fernández <span className="text-muted-foreground">Minister of Defense</span></li>
+                          <li>Mario Marcel <span className="text-muted-foreground">Minister of Finance</span></li>
+                        </ul>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Landmark className="h-5 w-5" />
+                      <span>Key Strategic Locations</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="text-sm space-y-2 list-disc list-inside">
+                      <li><strong>Santiago</strong>: Capital and economic center</li>
+                      <li><strong>Valparaíso</strong>: Major port and naval base</li>
+                      <li><strong>Concepción</strong>: Industrial center and energy hub</li>
+                      <li><strong>Antofagasta</strong>: Mining region, copper and lithium</li>
+                      <li><strong>Punta Arenas</strong>: Strategic position near Antarctic territory</li>
+                      <li><strong>Iquique</strong>: Free trade zone and port city</li>
+                    </ul>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Briefcase className="h-5 w-5" />
+                      <span>Policy Direction</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="text-sm space-y-2 list-disc list-inside">
+                      <li><strong>Progressive social reforms</strong>: Focus on inequality, education, healthcare</li>
+                      <li><strong>Environmental leadership</strong>: Climate change initiatives and renewable energy</li>
+                      <li><strong>Balanced foreign policy</strong>: Maintaining relations with both US and China</li>
+                      <li><strong>Constitutional process</strong>: Continuing efforts for constitutional reform</li>
+                    </ul>
+                  </CardContent>
+                </Card>
               </div>
             </CardContent>
           </Card>
-
-          {/* Map and Key Strategic Points */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Globe className="h-5 w-5 text-primary" />
-                  Strategic Map
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div ref={chileMapContainer} className="w-full h-[400px] rounded-lg border"></div>
-                <div className="mt-4 text-sm text-muted-foreground">
-                  Map showing key strategic locations in Chile, including major cities, ports, and resource areas.
-                  Chile's 4,300 km Pacific coastline and sovereign interests extend to Easter Island and Antarctica.
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Landmark className="h-5 w-5 text-primary" />
-                  Boric Administration
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium text-muted-foreground">PRESIDENT</h3>
-                  <p className="font-medium">Gabriel Boric</p>
-                  <p className="text-sm">Left-leaning leader who took office in March 2022</p>
-                </div>
-
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium text-muted-foreground">KEY OFFICIALS</h3>
-                  <ul className="space-y-2">
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <div>
-                        <span className="font-medium">Maya Fernández</span>
-                        <p className="text-sm">Minister of Defense</p>
-                      </div>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <div>
-                        <span className="font-medium">Alberto van Klaveren</span>
-                        <p className="text-sm">Minister of Foreign Affairs</p>
-                      </div>
-                    </li>
-                  </ul>
-                </div>
-
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium text-muted-foreground">POLICY DIRECTION</h3>
-                  <ul className="space-y-2">
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <span>Multilateralist foreign policy</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <span>Commitment to human rights and democracy</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <span>Active UN peacekeeping participation</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <span>Balanced relations with US and China</span>
-                    </li>
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
 
           {/* Economic Indicators */}
           <Card>
@@ -2014,108 +1767,97 @@ export default function Countries() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <p>
-                  Brazil is redefining its defense strategy under President Luiz Inácio Lula da Silva's leadership. Once
-                  known for soft power and non-alignment, Brazil is now pursuing military modernization and global
-                  partnerships while balancing pressing domestic needs. The country aims to strengthen its national
-                  security and global influence in a multipolar world.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                  <div className="flex flex-col p-3 bg-muted/30 rounded-lg">
-                    <span className="text-sm text-muted-foreground">Population</span>
-                    <span className="text-lg font-medium">214.3 million</span>
-                  </div>
-                  <div className="flex flex-col p-3 bg-muted/30 rounded-lg">
-                    <span className="text-sm text-muted-foreground">Capital</span>
-                    <span className="text-lg font-medium">Brasília</span>
-                  </div>
-                  <div className="flex flex-col p-3 bg-muted/30 rounded-lg">
-                    <span className="text-sm text-muted-foreground">Official Language</span>
-                    <span className="text-lg font-medium">Portuguese</span>
-                  </div>
-                </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Globe className="h-5 w-5" />
+                      <span>Country Overview</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Brazil is Latin America's largest economy and a regional power. President Luiz Inácio Lula da Silva returned to office in January 2023 for a third term, following a polarizing election against former President Jair Bolsonaro. Lula's administration is focusing on social programs, environmental protection, and repositioning Brazil on the global stage.
+                    </p>
+                    <div className="grid grid-cols-3 gap-4 text-center">
+                      <div>
+                        <div className="text-xs text-muted-foreground">Population</div>
+                        <div className="font-medium">214 million</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-muted-foreground">Capital</div>
+                        <div className="font-medium">Brasília</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-muted-foreground">Official Language</div>
+                        <div className="font-medium">Portuguese</div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <User className="h-5 w-5" />
+                      <span>Lula Administration</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div>
+                        <div className="text-xs text-muted-foreground">PRESIDENT</div>
+                        <div className="font-medium">Luiz Inácio Lula da Silva</div>
+                        <div className="text-xs text-muted-foreground">Returned to office in January 2023 for a third term</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-muted-foreground">KEY OFFICIALS</div>
+                        <ul className="text-sm space-y-1 list-disc list-inside">
+                          <li>Fernando Haddad <span className="text-muted-foreground">Minister of Finance</span></li>
+                          <li>Mauro Vieira <span className="text-muted-foreground">Minister of Foreign Affairs</span></li>
+                          <li>José Múcio <span className="text-muted-foreground">Minister of Defense</span></li>
+                          <li>Marina Silva <span className="text-muted-foreground">Minister of Environment</span></li>
+                        </ul>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Landmark className="h-5 w-5" />
+                      <span>Key Strategic Locations</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="text-sm space-y-2 list-disc list-inside">
+                      <li><strong>Brasília</strong>: Capital and administrative center</li>
+                      <li><strong>São Paulo</strong>: Financial and industrial powerhouse</li>
+                      <li><strong>Rio de Janeiro</strong>: Tourism, oil industry, and naval base</li>
+                      <li><strong>Manaus</strong>: Amazon gateway and free trade zone</li>
+                      <li><strong>Itaipu Dam</strong>: Major hydroelectric power source</li>
+                      <li><strong>Santos</strong>: Largest port in Latin America</li>
+                    </ul>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Briefcase className="h-5 w-5" />
+                      <span>Policy Direction</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="text-sm space-y-2 list-disc list-inside">
+                      <li><strong>Amazon protection</strong>: Renewed focus on reducing deforestation</li>
+                      <li><strong>Social welfare expansion</strong>: Bolsa Família and poverty reduction programs</li>
+                      <li><strong>BRICS engagement</strong>: Strengthening ties with Russia, India, China, South Africa</li>
+                      <li><strong>Climate leadership</strong>: Positioning Brazil as environmental leader</li>
+                    </ul>
+                  </CardContent>
+                </Card>
               </div>
             </CardContent>
           </Card>
-
-          {/* Map and Key Strategic Points */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Globe className="h-5 w-5 text-primary" />
-                  Strategic Map
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div ref={brazilMapContainer} className="w-full h-[400px] rounded-lg border"></div>
-                <div className="mt-4 text-sm text-muted-foreground">
-                  Map showing key strategic locations in Brazil, including major cities, resource areas, and the Amazon
-                  region. Brazil's vast territory includes the Amazon rainforest, extensive coastline, and borders with
-                  ten countries.
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Landmark className="h-5 w-5 text-primary" />
-                  Lula Administration
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium text-muted-foreground">PRESIDENT</h3>
-                  <p className="font-medium">Luiz Inácio Lula da Silva</p>
-                  <p className="text-sm">Returned to office in January 2023 for his third term</p>
-                </div>
-
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium text-muted-foreground">KEY OFFICIALS</h3>
-                  <ul className="space-y-2">
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <div>
-                        <span className="font-medium">José Múcio Monteiro</span>
-                        <p className="text-sm">Minister of Defense</p>
-                      </div>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <div>
-                        <span className="font-medium">Mauro Vieira</span>
-                        <p className="text-sm">Minister of Foreign Affairs</p>
-                      </div>
-                    </li>
-                  </ul>
-                </div>
-
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium text-muted-foreground">POLICY DIRECTION</h3>
-                  <ul className="space-y-2">
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <span>Cooperative multipolarity in foreign policy</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <span>Defense industry as driver of reindustrialization</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <span>Regional leadership in South America</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <span>Amazon protection as national security priority</span>
-                    </li>
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
 
           {/* Economic Indicators */}
           <Card>
@@ -2812,4 +2554,3 @@ export default function Countries() {
     </div>
   )
 }
-
